@@ -305,7 +305,8 @@ import { ProyectoService, Proyecto, TipoDocumento } from '../../services/proyect
             ><input class="input" type="date" [(ngModel)]="form.fechaAudiencia" />
           </div>
           <div class="field">
-            <label class="label">Dirección del trabajo</label><input class="input" [(ngModel)]="form.direccionTrabajo" />
+            <label class="label">Dirección del trabajo</label
+            ><input class="input" [(ngModel)]="form.direccionTrabajo" />
           </div>
         </div>
         <div class="form-grid2" style="margin-top:14px">
@@ -684,19 +685,21 @@ export class ExpedientesComponent implements OnInit {
   form: Proyecto = this.formVacio();
 
   tiposDespido = [
-    { value: 'SIN_CAUSA', label: 'Sin Causa' },
-    { value: 'CON_CAUSA', label: 'Con Causa' },
-    { value: 'VOLUNTARIO', label: 'Voluntario' },
+    { value: 'DESVINCULACION_VOLUNTARIA', label: 'Desvinculación Voluntaria (por el trabajador)' },
     { value: 'MUTUO_ACUERDO', label: 'Mutuo Acuerdo' },
-    { value: 'REDUCCION_PERSONAL', label: 'Reducción de Personal' },
+    { value: 'DESVINCULACION_INVOLUNTARIA', label: 'Desvinculación Involuntaria (Despido por el empleador)' },
+    { value: 'CAUSALES_DISCIPLINARIAS', label: 'Causales Disciplinarias / Incumplimientos (Art. 160)' },
+    { value: 'CAUSALES_OBJETIVAS', label: 'Causales Objetivas (Art. 159)' },
+    { value: 'OTRAS_CAUSALES', label: 'Otras Causales' },
   ];
 
   tipoDespidoLabel: any = {
-    SIN_CAUSA: 'Sin Causa',
-    CON_CAUSA: 'Con Causa',
-    VOLUNTARIO: 'Voluntario',
+    DESVINCULACION_VOLUNTARIA: 'Desvinculación Voluntaria',
     MUTUO_ACUERDO: 'Mutuo Acuerdo',
-    REDUCCION_PERSONAL: 'Reducción de Personal',
+    DESVINCULACION_INVOLUNTARIA: 'Desvinculación Involuntaria',
+    CAUSALES_DISCIPLINARIAS: 'Causales Disciplinarias (Art. 160)',
+    CAUSALES_OBJETIVAS: 'Causales Objetivas (Art. 159)',
+    OTRAS_CAUSALES: 'Otras Causales',
   };
 
   constructor(private svc: ProyectoService) {}
