@@ -18,7 +18,7 @@ export interface Proyecto {
   dniEmpleado?: string;
   emailEmpleado?: string;
   fechaAudiencia: string;
-  juzgado?: string;
+ direccionTrabajo?: string;
   numeroCausa?: string;
   abogadoEmpresa?: string;
   abogadoEmpleado?: string;

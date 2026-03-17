@@ -305,7 +305,7 @@ import { ProyectoService, Proyecto, TipoDocumento } from '../../services/proyect
             ><input class="input" type="date" [(ngModel)]="form.fechaAudiencia" />
           </div>
           <div class="field">
-            <label class="label">Juzgado</label><input class="input" [(ngModel)]="form.juzgado" />
+            <label class="label">Dirección del trabajo</label><input class="input" [(ngModel)]="form.direccionTrabajo" />
           </div>
         </div>
         <div class="form-grid2" style="margin-top:14px">
@@ -874,7 +874,7 @@ export class ExpedientesComponent implements OnInit {
 
   getJuicioItems(p: Proyecto) {
     return [
-      { key: 'Juzgado', val: p.juzgado },
+      { key: 'Dirección del trabajo', val: p.direccionTrabajo },
       { key: 'N° Causa', val: p.numeroCausa },
       { key: 'Abogado Empresa', val: p.abogadoEmpresa },
       { key: 'Abogado Empleado', val: p.abogadoEmpleado },
