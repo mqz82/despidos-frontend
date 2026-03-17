@@ -54,7 +54,7 @@ import { ProyectoService, Proyecto } from '../../services/proyecto';
         <span>{{ getDias(p.fechaAudiencia) <= 7 ? '🚨' : '⚠️' }}</span>
         <div>
           <strong class="alert-title"
-            >{{ p.numeroExpediente }} — {{ p.nombreEmpleado }} {{ p.apellidoEmpleado }}</strong
+            >{{ p.nombreExpediente }} — {{ p.nombreEmpleado }} {{ p.apellidoEmpleado }}</strong
           >
           <div class="alert-body">
             Audiencia: {{ formatFecha(p.fechaAudiencia) }} ({{
@@ -87,7 +87,7 @@ import { ProyectoService, Proyecto } from '../../services/proyecto';
         <tbody>
           <tr *ngFor="let p of proximas">
             <td>
-              <span class="expediente-num">{{ p.numeroExpediente }}</span>
+              <span class="expediente-num">{{ p.nombreExpediente }}</span>
             </td>
             <td>{{ p.nombreEmpleado }} {{ p.apellidoEmpleado }}</td>
             <td>{{ formatFecha(p.fechaAudiencia) }}</td>

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 export interface Proyecto {
   id?: number;
-  numeroExpediente: string;
+  nombreExpediente: string;
   estado: string;
   nombreEmpleado: string;
   apellidoEmpleado: string;

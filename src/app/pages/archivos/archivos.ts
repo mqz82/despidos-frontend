@@ -20,7 +20,7 @@ import { HttpClient } from '@angular/common/http';
       <select class="select" [(ngModel)]="proyectoSeleccionadoId" (change)="cargarArchivos()">
         <option value="">-- Seleccionar expediente --</option>
         <option *ngFor="let p of proyectos" [value]="p.id">
-          {{ p.numeroExpediente }} — {{ p.nombreEmpleado }} {{ p.apellidoEmpleado }}
+          {{ p.nombreExpediente }} — {{ p.nombreEmpleado }} {{ p.apellidoEmpleado }}
         </option>
       </select>
     </div>
@@ -34,7 +34,7 @@ import { HttpClient } from '@angular/common/http';
 
       <div class="card">
         <h3 class="card-title">
-          Documentos — {{ proyectoSeleccionado.numeroExpediente }} ·
+          Documentos — {{ proyectoSeleccionado.nombreExpediente }} ·
           {{ proyectoSeleccionado.nombreEmpleado }} {{ proyectoSeleccionado.apellidoEmpleado }}
         </h3>
 
