@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProyectoService, TipoDocumento } from '../../services/proyecto';
@@ -87,10 +87,16 @@ export class DocumentosComponent implements OnInit {
   editandoId: number | null = null;
   form: TipoDocumento = this.formVacio();
 
-  constructor(private svc: ProyectoService) {}
+  constructor(
+    private svc: ProyectoService,
+    private cdr: ChangeDetectorRef,
+) {}
 
   ngOnInit() {
-    this.svc.getTiposDocumento().subscribe(d => this.tiposDocumento = d);
+    this.svc.getTiposDocumento().subscribe(d =>{
+      this.tiposDocumento = [...d];
+      this.cdr.detectChanges();
+    });
   }
 
   guardar() {

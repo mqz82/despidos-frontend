@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProyectoService, Proyecto } from '../../services/proyecto';
 import { HttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-archivos',
@@ -327,10 +328,14 @@ export class ArchivosComponent implements OnInit {
   constructor(
     private svc: ProyectoService,
     private http: HttpClient,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
-    this.svc.getProyectos().subscribe((d) => (this.proyectos = d));
+    this.svc.getProyectos().subscribe((d) => {
+      this.proyectos = [...d];
+      this.cdr.detectChanges();
+    });
   }
 
   cargarArchivos() {
@@ -345,6 +350,7 @@ export class ArchivosComponent implements OnInit {
       this.http
         .get<any[]>(`${this.baseUrl}/archivos/expediente/${id}`)
         .subscribe((data) => (this.archivos = data));
+      this.cdr.detectChanges();
     });
   }
 
@@ -455,5 +461,4 @@ export class ArchivosComponent implements OnInit {
       ).length || 0
     );
   }
-
 }
