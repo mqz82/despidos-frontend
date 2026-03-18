@@ -20,7 +20,7 @@ import { RutService } from '../../services/rut';
       <input
         class="input-search"
         [(ngModel)]="busqueda"
-        placeholder="Buscar por nombre, expediente, legajo..."
+        placeholder="Buscar por nombre, expediente ..."
       />
       <select class="select" [(ngModel)]="filtroEstado">
         <option value="TODOS">Todos los estados</option>
@@ -243,11 +243,16 @@ import { RutService } from '../../services/rut';
         <div class="form-grid2">
           <div class="field">
             <label class="label">Nombre Expediente *</label
-            ><input class="input" [(ngModel)]="form.nombreExpediente" maxlength="255" />
+            ><input
+              class="input"
+              [(ngModel)]="form.nombreExpediente"
+              maxlength="255"
+              tabindex="1"
+            />
           </div>
           <div class="field">
             <label class="label">Estado</label>
-            <select class="select" [(ngModel)]="form.estado">
+            <select class="select" [(ngModel)]="form.estado" tabindex="2">
               <option value="ACTIVO">Activo</option>
               <option value="EN_JUICIO">En Juicio</option>
               <option value="RESUELTO">Resuelto</option>
@@ -267,6 +272,7 @@ import { RutService } from '../../services/rut';
               [(ngModel)]="form.rutEmpleado"
               (ngModelChange)="onRutEmpleadoChange($event)"
               placeholder="00.000.000-0"
+              tabindex="3"
             />
             <span
               *ngIf="!rutEmpleadoValido"
@@ -277,33 +283,33 @@ import { RutService } from '../../services/rut';
           </div>
           <div class="field">
             <label class="label">Nombre *</label
-            ><input class="input" [(ngModel)]="form.nombreEmpleado" />
+            ><input class="input" [(ngModel)]="form.nombreEmpleado" tabindex="4" />
           </div>
           <div class="field">
             <label class="label">Apellido *</label
-            ><input class="input" [(ngModel)]="form.apellidoEmpleado" />
+            ><input class="input" [(ngModel)]="form.apellidoEmpleado" tabindex="5" />
           </div>
           <div class="field">
             <label class="label">Área</label
-            ><input class="input" [(ngModel)]="form.areaDepartamento" />
+            ><input class="input" [(ngModel)]="form.areaDepartamento" tabindex="6" />
           </div>
           <div class="field">
             <label class="label">Email Empleado</label
-            ><input class="input" type="email" [(ngModel)]="form.emailEmpleado" />
+            ><input class="input" type="email" [(ngModel)]="form.emailEmpleado" tabindex="7" />
           </div>
         </div>
         <div class="form-grid3" style="margin-top:14px">
           <div class="field">
             <label class="label">Fecha Ingreso</label
-            ><input class="input" type="date" [(ngModel)]="form.fechaIngreso" />
+            ><input class="input" type="date" [(ngModel)]="form.fechaIngreso" tabindex="8" />
           </div>
           <div class="field">
             <label class="label">Fecha Despido</label
-            ><input class="input" type="date" [(ngModel)]="form.fechaDespido" />
+            ><input class="input" type="date" [(ngModel)]="form.fechaDespido" tabindex="9" />
           </div>
           <div class="field">
             <label class="label">Tipo Despido</label>
-            <select class="select" [(ngModel)]="form.tipoDespido">
+            <select class="select" [(ngModel)]="form.tipoDespido" tabindex="10">
               <option *ngFor="let t of tiposDespido" [value]="t.value">{{ t.label }}</option>
             </select>
           </div>
@@ -311,7 +317,12 @@ import { RutService } from '../../services/rut';
         <div class="form-grid2" style="margin-top:14px">
           <div class="field">
             <label class="label">Monto Indemnización ($)</label
-            ><input class="input" type="number" [(ngModel)]="form.montoIndemnizacion" />
+            ><input
+              class="input"
+              type="number"
+              [(ngModel)]="form.montoIndemnizacion"
+              tabindex="11"
+            />
           </div>
         </div>
 
@@ -320,21 +331,26 @@ import { RutService } from '../../services/rut';
         <div class="form-grid2">
           <div class="field">
             <label class="label">Fecha Audiencia *</label
-            ><input class="input" type="date" [(ngModel)]="form.fechaAudiencia" />
+            ><input class="input" type="date" [(ngModel)]="form.fechaAudiencia" tabindex="12" />
           </div>
           <div class="field">
             <label class="label">Dirección del trabajo</label
-            ><input class="input" [(ngModel)]="form.direccionTrabajo" />
+            ><input class="input" [(ngModel)]="form.direccionTrabajo" tabindex="13" />
           </div>
         </div>
         <div class="form-grid2" style="margin-top:14px">
           <div class="field">
             <label class="label">N° Causa</label
-            ><input class="input" [(ngModel)]="form.numeroCausa" />
+            ><input class="input" [(ngModel)]="form.numeroCausa" tabindex="14" />
           </div>
           <div class="field">
             <label class="label">Días anticipación alerta</label
-            ><input class="input" type="number" [(ngModel)]="form.diasAnticipacionAlerta" />
+            ><input
+              class="input"
+              type="number"
+              [(ngModel)]="form.diasAnticipacionAlerta"
+              tabindex="15"
+            />
           </div>
         </div>
         <div class="form-grid2" style="margin-top:14px">
@@ -345,6 +361,7 @@ import { RutService } from '../../services/rut';
               [(ngModel)]="form.rutAbogadoEmpleado"
               (ngModelChange)="onRutAbogadoEmpleadoChange($event)"
               placeholder="00.00.000-0"
+              tabindex="16"
             />
             <span
               *ngIf="!rutAbogadoEmpleadoValido"
@@ -355,7 +372,7 @@ import { RutService } from '../../services/rut';
           </div>
           <div class="field">
             <label class="label">Nombre Abogado Empleado</label
-            ><input class="input" [(ngModel)]="form.abogadoEmpleado" />
+            ><input class="input" [(ngModel)]="form.abogadoEmpleado" tabindex="17" />
           </div>
         </div>
         <div class="form-grid2" style="margin-top:14px">
@@ -366,6 +383,7 @@ import { RutService } from '../../services/rut';
               [(ngModel)]="form.rutAbogadoEmpresa"
               (ngModelChange)="onRutAbogadoEmpresaChange($event)"
               placeholder="00.000.000-0"
+              tabindex="18"
             />
             <span
               *ngIf="!rutAbogadoEmpresaValido"
@@ -376,7 +394,7 @@ import { RutService } from '../../services/rut';
           </div>
           <div class="field">
             <label class="label">Nombre Abogado Empresa</label>
-            <input class="input" [(ngModel)]="form.abogadoEmpresa" />
+            <input class="input" [(ngModel)]="form.abogadoEmpresa" tabindex="18" />
           </div>
         </div>
 
@@ -422,17 +440,20 @@ import { RutService } from '../../services/rut';
 
         <hr class="divider" />
         <div class="field">
-          <label class="label">Notas</label
+          <label class="label">Observaciones</label
           ><textarea
             class="input"
             style="min-height:80px;resize:vertical"
             [(ngModel)]="form.notas"
+            tabindex="19"
           ></textarea>
         </div>
 
         <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:28px">
           <button class="btn btn-ghost" (click)="cerrarForm()">Cancelar</button>
-          <button class="btn btn-primary" (click)="guardar()">Guardar Expediente</button>
+          <button class="btn btn-primary" (click)="guardar()" tabindex="20">
+            Guardar Expediente
+          </button>
         </div>
       </div>
     </div>
