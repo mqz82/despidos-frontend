@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProyectoService, Proyecto } from '../../services/proyecto';
 import { HttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-archivos',
@@ -20,7 +21,7 @@ import { HttpClient } from '@angular/common/http';
       <select class="select" [(ngModel)]="proyectoSeleccionadoId" (change)="cargarArchivos()">
         <option value="">-- Seleccionar expediente --</option>
         <option *ngFor="let p of proyectos" [value]="p.id">
-          {{ p.numeroExpediente }} — {{ p.nombreEmpleado }} {{ p.apellidoEmpleado }}
+          {{ p.nombreExpediente }} — {{ p.nombreEmpleado }} {{ p.apellidoEmpleado }}
         </option>
       </select>
     </div>
@@ -34,7 +35,7 @@ import { HttpClient } from '@angular/common/http';
 
       <div class="card">
         <h3 class="card-title">
-          Documentos — {{ proyectoSeleccionado.numeroExpediente }} ·
+          Documentos — {{ proyectoSeleccionado.nombreExpediente }} ·
           {{ proyectoSeleccionado.nombreEmpleado }} {{ proyectoSeleccionado.apellidoEmpleado }}
         </h3>
 
@@ -327,10 +328,14 @@ export class ArchivosComponent implements OnInit {
   constructor(
     private svc: ProyectoService,
     private http: HttpClient,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
-    this.svc.getProyectos().subscribe((d) => (this.proyectos = d));
+    this.svc.getProyectos().subscribe((d) => {
+      this.proyectos = [...d];
+      this.cdr.detectChanges();
+    });
   }
 
   cargarArchivos() {
@@ -345,6 +350,7 @@ export class ArchivosComponent implements OnInit {
       this.http
         .get<any[]>(`${this.baseUrl}/archivos/expediente/${id}`)
         .subscribe((data) => (this.archivos = data));
+      this.cdr.detectChanges();
     });
   }
 
@@ -455,5 +461,4 @@ export class ArchivosComponent implements OnInit {
       ).length || 0
     );
   }
-
 }

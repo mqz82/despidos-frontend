@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 export interface Proyecto {
   id?: number;
-  numeroExpediente: string;
+  nombreExpediente: string;
   estado: string;
   nombreEmpleado: string;
   apellidoEmpleado: string;
@@ -15,13 +15,15 @@ export interface Proyecto {
   fechaDespido?: string;
   tipoDespido?: string;
   montoIndemnizacion?: number;
-  dniEmpleado?: string;
+  rutEmpleado?: string;
   emailEmpleado?: string;
   fechaAudiencia: string;
-  juzgado?: string;
+  direccionTrabajo?: string;
   numeroCausa?: string;
   abogadoEmpresa?: string;
-  abogadoEmpleado?: string;
+  rutAbogadoEmpresa?: string;
+  abogadoEmpleado?: string
+  rutAbogadoEmpleado?: string;
   notas?: string;
   diasAnticipacionAlerta?: number;
   emailAlerta?: string;

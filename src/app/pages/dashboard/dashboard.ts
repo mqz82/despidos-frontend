@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProyectoService, Proyecto } from '../../services/proyecto';
@@ -54,7 +54,7 @@ import { ProyectoService, Proyecto } from '../../services/proyecto';
         <span>{{ getDias(p.fechaAudiencia) <= 7 ? '🚨' : '⚠️' }}</span>
         <div>
           <strong class="alert-title"
-            >{{ p.numeroExpediente }} — {{ p.nombreEmpleado }} {{ p.apellidoEmpleado }}</strong
+            >{{ p.nombreExpediente }} — {{ p.nombreEmpleado }} {{ p.apellidoEmpleado }}</strong
           >
           <div class="alert-body">
             Audiencia: {{ formatFecha(p.fechaAudiencia) }} ({{
@@ -87,7 +87,7 @@ import { ProyectoService, Proyecto } from '../../services/proyecto';
         <tbody>
           <tr *ngFor="let p of proximas">
             <td>
-              <span class="expediente-num">{{ p.numeroExpediente }}</span>
+              <span class="expediente-num">{{ p.nombreExpediente }}</span>
             </td>
             <td>{{ p.nombreEmpleado }} {{ p.apellidoEmpleado }}</td>
             <td>{{ formatFecha(p.fechaAudiencia) }}</td>
@@ -270,20 +270,23 @@ export class DashboardComponent implements OnInit {
   alertas: Proyecto[] = [];
   stats = { total: 0, activos: 0, enJuicio: 0, resueltos: 0, conFaltantes: 0 };
 
-  constructor(private svc: ProyectoService) {}
+  constructor(
+    private svc: ProyectoService,
+    private cdr: ChangeDetectorRef,
+) {}
 
   ngOnInit() {
     this.svc.getProyectos().subscribe((data) => {
-      this.proyectos = data;
+      this.proyectos = [...data];
       this.calcularStats();
       this.calcularAlertas();
       // Filtrar proximas desde los mismos datos
-      this.proximas = data
-        .filter((p) => {
+      this.proximas = [...data].filter((p) => {
           const dias = this.getDias(p.fechaAudiencia);
           return dias >= 0 && dias <= 30 && p.estado !== 'RESUELTO' && p.estado !== 'ARCHIVADO';
         })
         .sort((a, b) => this.getDias(a.fechaAudiencia) - this.getDias(b.fechaAudiencia));
+      this.cdr.detectChanges();
     });
   }
 
