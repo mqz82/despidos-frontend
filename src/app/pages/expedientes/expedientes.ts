@@ -1,8 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProyectoService, Proyecto, TipoDocumento } from '../../services/proyecto';
 import { RutService } from '../../services/rut';
+import {ToastService } from '../../shared/toast';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+
 
 
 @Component({
@@ -785,22 +789,42 @@ export class ExpedientesComponent implements OnInit {
   constructor(
     private svc: ProyectoService,
     private rutSvc: RutService,
+    private toastSvc: ToastService,
+    private cdr: ChangeDetectorRef,
+    private router: Router,
   ) {}
 
   ngOnInit() {
-    this.svc.getProyectos().subscribe((d) => (this.proyectos = d));
-    this.svc.getTiposDocumento().subscribe((d) => (this.tiposDocumento = d));
+    this.cargarDatos();
+
+    // Recargar cuando se navega a esta pantalla
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd && event.url.includes('expedientes')) {
+        this.cargarDatos();
+      }
+    });
+  }
+
+  cargarDatos() {
+    this.svc.getProyectos().subscribe((d) => {
+      this.proyectos = [...d];
+      this.cdr.detectChanges();
+    });
+    this.svc.getTiposDocumento().subscribe((d) => {
+      this.tiposDocumento = [...d];
+      this.cdr.detectChanges();
+    });
   }
 
   get filtrados(): Proyecto[] {
     return this.proyectos.filter((p) => {
       const matchBusq =
         !this.busqueda ||
-        `${p.nombreEmpleado} ${p.apellidoEmpleado} ${p.nombreExpediente} ${p.legajo}`
+        `${p.nombreEmpleado} ${p.apellidoEmpleado} ${p.nombreExpediente}`
           .toLowerCase()
           .includes(this.busqueda.toLowerCase());
       const matchEstado = this.filtroEstado === 'TODOS' || p.estado === this.filtroEstado;
-      return matchBusq && matchEstado;
+            return matchBusq && matchEstado;
     });
   }
 
@@ -828,6 +852,14 @@ export class ExpedientesComponent implements OnInit {
   }
 
   guardar() {
+    // Validar campos obligarios
+    if (!this.form.nombreExpediente || !this.form.fechaAudiencia || !this.form.tipoDespido) {
+      this.toastSvc.error(
+        ' Nombre Expediente, Fecha Audiencia y Tipo Despido son campos obligatorios antes de guardar',
+      );
+      return;
+    }
+
     const docs = this.docSeleccionados.map((d) => ({
       ...(d.id ? { id: d.id } : {}),
       tipoDocumento: { id: d.tipoId, nombre: '' },
@@ -836,14 +868,31 @@ export class ExpedientesComponent implements OnInit {
     }));
     const payload = { ...this.form, documentos: docs };
     if (this.editando?.id) {
-      this.svc.actualizarProyecto(this.editando.id, payload).subscribe((updated) => {
-        this.proyectos = this.proyectos.map((p) => (p.id === updated.id ? updated : p));
-        this.cerrarForm();
+      this.svc.actualizarProyecto(this.editando.id, payload).subscribe({
+        next: (updated) => {
+          this.proyectos = this.proyectos.map((p) => (p.id === updated.id ? updated : p));
+          this.mostrarForm = false;
+          this.editando = null;
+          this.editando = null;
+          this.form = this.formVacio();
+          this.docSeleccionados = [];
+          this.cdr.detectChanges();
+          setTimeout(() => this.toastSvc.exito('Expediente actualizado correctamente'), 100);
+        },
+        error: () => this.toastSvc.error('Error al actualizar el expediente'),
       });
     } else {
-      this.svc.crearProyecto(payload).subscribe((nuevo) => {
-        this.proyectos.push(nuevo);
-        this.cerrarForm();
+      this.svc.crearProyecto(payload).subscribe({
+        next: (nuevo) => {
+          this.proyectos = [...this.proyectos, nuevo];
+          this.mostrarForm = false;
+          this.editando = null;
+          this.form = this.formVacio();
+          this.docSeleccionados = [];
+          this.cdr.detectChanges();
+          setTimeout(() => this.toastSvc.exito('Expediente creado correctamente'), 100);
+        },
+        error: () => this.toastSvc.error('Error al crear el expediente'),
       });
     }
   }
@@ -865,6 +914,8 @@ export class ExpedientesComponent implements OnInit {
   cerrarForm() {
     this.mostrarForm = false;
     this.editando = null;
+    this.form = this.formVacio();
+    this.docSeleccionados = [];
   }
 
   actualizarDoc(doc: any) {
@@ -993,7 +1044,7 @@ export class ExpedientesComponent implements OnInit {
       nombreEmpleado: '',
       apellidoEmpleado: '',
       fechaAudiencia: '',
-      tipoDespido: 'SIN_CAUSA',
+      tipoDespido: '',
       diasAnticipacionAlerta: 30,
     };
   }
