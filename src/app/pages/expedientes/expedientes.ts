@@ -1044,7 +1044,7 @@ export class ExpedientesComponent implements OnInit {
       nombreEmpleado: '',
       apellidoEmpleado: '',
       fechaAudiencia: '',
-      tipoDespido: 'SIN_CAUSA',
+      tipoDespido: '',
       diasAnticipacionAlerta: 30,
     };
   }
