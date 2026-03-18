@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProyectoService, Proyecto, TipoDocumento } from '../../services/proyecto';
 import { RutService } from '../../services/rut';
 import {ToastService } from '../../shared/toast';
-import { ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 
 
 
@@ -790,22 +791,40 @@ export class ExpedientesComponent implements OnInit {
     private rutSvc: RutService,
     private toastSvc: ToastService,
     private cdr: ChangeDetectorRef,
+    private router: Router,
   ) {}
 
   ngOnInit() {
-    this.svc.getProyectos().subscribe((d) => (this.proyectos = d));
-    this.svc.getTiposDocumento().subscribe((d) => (this.tiposDocumento = d));
+    this.cargarDatos();
+
+    // Recargar cuando se navega a esta pantalla
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd && event.url.includes('expedientes')) {
+        this.cargarDatos();
+      }
+    });
+  }
+
+  cargarDatos() {
+    this.svc.getProyectos().subscribe((d) => {
+      this.proyectos = [...d];
+      this.cdr.detectChanges();
+    });
+    this.svc.getTiposDocumento().subscribe((d) => {
+      this.tiposDocumento = [...d];
+      this.cdr.detectChanges();
+    });
   }
 
   get filtrados(): Proyecto[] {
     return this.proyectos.filter((p) => {
       const matchBusq =
         !this.busqueda ||
-        `${p.nombreEmpleado} ${p.apellidoEmpleado} ${p.nombreExpediente} ${p.legajo}`
+        `${p.nombreEmpleado} ${p.apellidoEmpleado} ${p.nombreExpediente}`
           .toLowerCase()
           .includes(this.busqueda.toLowerCase());
       const matchEstado = this.filtroEstado === 'TODOS' || p.estado === this.filtroEstado;
-      return matchBusq && matchEstado;
+            return matchBusq && matchEstado;
     });
   }
 
@@ -853,6 +872,7 @@ export class ExpedientesComponent implements OnInit {
         next: (updated) => {
           this.proyectos = this.proyectos.map((p) => (p.id === updated.id ? updated : p));
           this.mostrarForm = false;
+          this.editando = null;
           this.editando = null;
           this.form = this.formVacio();
           this.docSeleccionados = [];
