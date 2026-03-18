@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProyectoService, Proyecto, TipoDocumento } from '../../services/proyecto';
+import { RutService } from '../../services/rut';
+
 
 @Component({
   selector: 'app-expedientes',
@@ -258,6 +260,22 @@ import { ProyectoService, Proyecto, TipoDocumento } from '../../services/proyect
         <div class="section-title gold">— Datos del Empleado</div>
         <div class="form-grid3">
           <div class="field">
+            <label class="label">Rut Empleado</label
+            ><input
+              class="input"
+              type="text"
+              [(ngModel)]="form.rutEmpleado"
+              (ngModelChange)="onRutEmpleadoChange($event)"
+              placeholder="00.000.000-0"
+            />
+            <span
+              *ngIf="!rutEmpleadoValido"
+              style="color:#ef4444;font-size:11px;font-family:'IBM Plex Mono',monospace"
+            >
+              ✗ RUT inválido
+            </span>
+          </div>
+          <div class="field">
             <label class="label">Nombre *</label
             ><input class="input" [(ngModel)]="form.nombreEmpleado" />
           </div>
@@ -268,6 +286,10 @@ import { ProyectoService, Proyecto, TipoDocumento } from '../../services/proyect
           <div class="field">
             <label class="label">Área</label
             ><input class="input" [(ngModel)]="form.areaDepartamento" />
+          </div>
+          <div class="field">
+            <label class="label">Email Empleado</label
+            ><input class="input" type="email" [(ngModel)]="form.emailEmpleado" />
           </div>
         </div>
         <div class="form-grid3" style="margin-top:14px">
@@ -291,10 +313,6 @@ import { ProyectoService, Proyecto, TipoDocumento } from '../../services/proyect
             <label class="label">Monto Indemnización ($)</label
             ><input class="input" type="number" [(ngModel)]="form.montoIndemnizacion" />
           </div>
-          <div class="field">
-            <label class="label">Email Empleado</label
-            ><input class="input" type="email" [(ngModel)]="form.emailEmpleado" />
-          </div>
         </div>
 
         <hr class="divider" />
@@ -315,18 +333,50 @@ import { ProyectoService, Proyecto, TipoDocumento } from '../../services/proyect
             ><input class="input" [(ngModel)]="form.numeroCausa" />
           </div>
           <div class="field">
-            <label class="label">Abogado Empresa</label
-            ><input class="input" [(ngModel)]="form.abogadoEmpresa" />
+            <label class="label">Días anticipación alerta</label
+            ><input class="input" type="number" [(ngModel)]="form.diasAnticipacionAlerta" />
           </div>
         </div>
         <div class="form-grid2" style="margin-top:14px">
           <div class="field">
-            <label class="label">Abogado Empleado</label
-            ><input class="input" [(ngModel)]="form.abogadoEmpleado" />
+            <label class="label">Rut Abogado Empleado</label
+            ><input
+              class="input"
+              [(ngModel)]="form.rutAbogadoEmpleado"
+              (ngModelChange)="onRutAbogadoEmpleadoChange($event)"
+              placeholder="00.00.000-0"
+            />
+            <span
+              *ngIf="!rutAbogadoEmpleadoValido"
+              style="color:#ef4444;font-size:11px;font-family:'IBM Plex Mono',monospace"
+            >
+              ✗ RUT inválido
+            </span>
           </div>
           <div class="field">
-            <label class="label">Días anticipación alerta</label
-            ><input class="input" type="number" [(ngModel)]="form.diasAnticipacionAlerta" />
+            <label class="label">Nombre Abogado Empleado</label
+            ><input class="input" [(ngModel)]="form.abogadoEmpleado" />
+          </div>
+        </div>
+        <div class="form-grid2" style="margin-top:14px">
+          <div class="field">
+            <label class="label">Rut Abogado Empresa</label
+            ><input
+              class="input"
+              [(ngModel)]="form.rutAbogadoEmpresa"
+              (ngModelChange)="onRutAbogadoEmpresaChange($event)"
+              placeholder="00.000.000-0"
+            />
+            <span
+              *ngIf="!rutAbogadoEmpresaValido"
+              style="color:#ef4444;font-size:11px;font-family:'IBM Plex Mono',monospace"
+            >
+              ✗ RUT inválido
+            </span>
+          </div>
+          <div class="field">
+            <label class="label">Nombre Abogado Empresa</label>
+            <input class="input" [(ngModel)]="form.abogadoEmpresa" />
           </div>
         </div>
 
@@ -683,12 +733,21 @@ export class ExpedientesComponent implements OnInit {
   docSeleccionados: { tipoId: number; estado: string; obligatorio: boolean; id?: number }[] = [];
 
   form: Proyecto = this.formVacio();
+  rutEmpleadoValido = true;
+  rutAbogadoEmpresaValido = true;
+  rutAbogadoEmpleadoValido = true;
 
   tiposDespido = [
     { value: 'DESVINCULACION_VOLUNTARIA', label: 'Desvinculación Voluntaria (por el trabajador)' },
     { value: 'MUTUO_ACUERDO', label: 'Mutuo Acuerdo' },
-    { value: 'DESVINCULACION_INVOLUNTARIA', label: 'Desvinculación Involuntaria (Despido por el empleador)' },
-    { value: 'CAUSALES_DISCIPLINARIAS', label: 'Causales Disciplinarias / Incumplimientos (Art. 160)' },
+    {
+      value: 'DESVINCULACION_INVOLUNTARIA',
+      label: 'Desvinculación Involuntaria (Despido por el empleador)',
+    },
+    {
+      value: 'CAUSALES_DISCIPLINARIAS',
+      label: 'Causales Disciplinarias / Incumplimientos (Art. 160)',
+    },
     { value: 'CAUSALES_OBJETIVAS', label: 'Causales Objetivas (Art. 159)' },
     { value: 'OTRAS_CAUSALES', label: 'Otras Causales' },
   ];
@@ -702,7 +761,10 @@ export class ExpedientesComponent implements OnInit {
     OTRAS_CAUSALES: 'Otras Causales',
   };
 
-  constructor(private svc: ProyectoService) {}
+  constructor(
+    private svc: ProyectoService,
+    private rutSvc: RutService,
+  ) {}
 
   ngOnInit() {
     this.svc.getProyectos().subscribe((d) => (this.proyectos = d));
@@ -872,6 +934,7 @@ export class ExpedientesComponent implements OnInit {
         key: 'Indemnización',
         val: p.montoIndemnizacion ? '$' + p.montoIndemnizacion.toLocaleString('es-AR') : '-',
       },
+      { key: 'RUT', val: p.rutEmpleado },
     ].filter((i) => i.val);
   }
 
@@ -888,6 +951,20 @@ export class ExpedientesComponent implements OnInit {
     ].filter((i) => i.val);
   }
 
+  onRutEmpleadoChange(valor: string) {
+    this.form.rutEmpleado = this.rutSvc.formatear(valor);
+    this.rutEmpleadoValido = this.rutSvc.validar(this.form.rutEmpleado || '');
+  }
+
+  onRutAbogadoEmpresaChange(valor: string) {
+    this.form.rutAbogadoEmpresa = this.rutSvc.formatear(valor);
+    this.rutAbogadoEmpresaValido = this.rutSvc.validar(this.form.rutAbogadoEmpresa || '');
+  }
+
+  onRutAbogadoEmpleadoChange(valor: string) {
+    this.form.rutAbogadoEmpleado = this.rutSvc.formatear(valor);
+    this.rutAbogadoEmpleadoValido = this.rutSvc.validar(this.form.rutAbogadoEmpleado || '');
+  }
   formVacio(): Proyecto {
     return {
       nombreExpediente: '',
