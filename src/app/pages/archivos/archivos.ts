@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProyectoService, Proyecto } from '../../services/proyecto';
 import { HttpClient } from '@angular/common/http';
+import { ToastService } from '../../shared/toast';
 
 
 @Component({
@@ -85,6 +86,12 @@ import { HttpClient } from '@angular/common/http';
                   <span style="font-size:12px;color:#a09880">{{
                     getArchivo(doc.id!)?.nombreArchivo
                   }}</span>
+
+                  <span
+                    *ngIf="getArchivo(doc.id!)?.guardadoFisico"
+                    style="font-size:10px;color:#d4a853;font-family:'IBM Plex Mono',monospace"
+                    >FÍSICO</span>
+
                 </div>
               </td>
               <td>
@@ -329,6 +336,7 @@ export class ArchivosComponent implements OnInit {
     private svc: ProyectoService,
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
+    private toastSvc: ToastService,
   ) {}
 
   ngOnInit() {
@@ -345,11 +353,12 @@ export class ArchivosComponent implements OnInit {
     }
     const id = Number(this.proyectoSeleccionadoId);
     this.svc.getProyecto(id).subscribe((p: Proyecto) => {
-      this.proyectoSeleccionado = p;
+      this.proyectoSeleccionado = { ...p };
       // Cargar metadata de archivos
-      this.http
-        .get<any[]>(`${this.baseUrl}/archivos/expediente/${id}`)
-        .subscribe((data) => (this.archivos = data));
+      this.http.get<any[]>(`${this.baseUrl}/archivos/expediente/${id}`).subscribe((data) => {
+        this.archivos = [...data];
+        this.cdr.detectChanges();
+      });
       this.cdr.detectChanges();
     });
   }
@@ -369,6 +378,20 @@ export class ArchivosComponent implements OnInit {
       return;
     }
 
+    // // Validar tamaño máximo 10MB
+    // if (file.size > 10 * 1024 * 1024) {
+    //   this.toastSvc.advertencia('El archivo no puede superar los 10MB');
+    //   return;
+    // }
+
+    // Validar tamaño máximo 10MB
+    if (file.size > 10 * 1024 * 1024) {
+      if (confirm('El archivo supera los 10MB. ¿Querés guardarlo físicamente en el servidor?')) {
+        this.subirArchivoFisico(documentoId, file);
+      }
+      return;
+    }
+
     this.subiendo[documentoId] = true;
     this.exito[documentoId] = false;
 
@@ -380,20 +403,29 @@ export class ArchivosComponent implements OnInit {
         this.subiendo[documentoId] = false;
         this.exito[documentoId] = true;
         // Actualizar la lista de archivos
-        this.archivos = this.archivos.filter((a) => a.id !== documentoId);
-        this.archivos.push({
+        this.archivos = [...this.archivos.filter(a => a.id !== documentoId), {
           id: documentoId,
           nombreArchivo: file.name,
           archivoTipo: file.type,
           tipoDocumento: '',
           estado: 'RECIBIDO',
-        });
-        setTimeout(() => (this.exito[documentoId] = false), 3000);
-      },
-      error: () => {
-        this.subiendo[documentoId] = false;
-        this.errorMsg[documentoId] = true;
-        setTimeout(() => (this.errorMsg[documentoId] = false), 3000);
+            guardadoFisico: false
+          }];
+
+        // Actualizar estado en la lista de documentos del proyecto
+        if (this.proyectoSeleccionado?.documentos) {
+          this.proyectoSeleccionado = {
+            ...this.proyectoSeleccionado,
+            documentos: this.proyectoSeleccionado.documentos.map(d =>
+              d.id === documentoId ? { ...d, estado: 'RECIBIDO' } : d
+            )
+          };
+        }
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.exito[documentoId] = false;
+          this.cdr.detectChanges();
+        }, 3000);
       },
     });
   }
@@ -460,5 +492,46 @@ export class ArchivosComponent implements OnInit {
         (d) => d.obligatorio && d.estado === 'PENDIENTE',
       ).length || 0
     );
+  }
+
+  subirArchivoFisico(documentoId: number, file: File) {
+    this.subiendo[documentoId] = true;
+    const formData = new FormData();
+    formData.append('archivo', file);
+
+    this.http
+      .post<any>(`${this.baseUrl}/archivos/subir-fisico/${documentoId}`, formData)
+      .subscribe({
+        next: () => {
+          this.subiendo[documentoId] = false;
+          this.archivos = [
+            ...this.archivos.filter((a) => a.id !== documentoId),
+            {
+              id: documentoId,
+              nombreArchivo: file.name,
+              archivoTipo: file.type,
+              tipoDocumento: '',
+              estado: 'RECIBIDO',
+              guardadoFisico: true,
+            },
+          ];
+          // Actualizar también el estado en la lista de documentos del proyecto
+          if (this.proyectoSeleccionado?.documentos) {
+            this.proyectoSeleccionado = {
+              ...this.proyectoSeleccionado,
+              documentos: this.proyectoSeleccionado.documentos.map((d) =>
+                d.id === documentoId ? { ...d, estado: 'RECIBIDO' } : d,
+              ),
+            };
+          }
+          this.cdr.detectChanges();
+          this.toastSvc.exito('Archivo guardado físicamente en el servidor');
+        },
+        error: () => {
+          this.subiendo[documentoId] = false;
+          this.toastSvc.error('Error al guardar el archivo físicamente');
+          this.cdr.detectChanges();
+        },
+      });
   }
 }
