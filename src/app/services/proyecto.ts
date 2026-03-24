@@ -50,6 +50,57 @@ export interface TipoDocumento {
   orden?: number;
 }
 
+export interface Persona {
+  id?: number;
+  nombres: string;
+  appPaterno: string;
+  appMaterno?: string;
+  rut?: string;
+  genero?: string;
+  fechaNacimiento?: string;
+  activo?: boolean;
+}
+
+export interface ContactoPersona {
+  id?: number;
+  persona?: Persona;
+  tipo: string;
+  descripcion: string;
+  principal?: boolean;
+  activo?: boolean;
+}
+
+export interface DireccionPersona {
+  id?: number;
+  persona?: Persona;
+  tipo: string;
+  calle: string;
+  numeroCalle: string;
+  departamento?: string;
+  comuna: string;
+  ciudad: string;
+  region: string;
+}
+
+export interface Abogado {
+  id?: number;
+  persona: Persona;
+  numeroColegiatura?: string;
+  especialidad?: string;
+  estudioJuridico?: string;
+  activo?: boolean;
+}
+
+export interface Funcionario {
+  id?: number;
+  persona: Persona;
+  cargo?: string;
+  departamento?: string;
+  institucion?: string;
+  activo?: boolean;
+}
+
+
 @Injectable({ providedIn: 'root' })
 export class ProyectoService {
   private baseUrl = 'http://localhost:8080/api';
@@ -129,4 +180,44 @@ export class ProyectoService {
   eliminarTipoDocumento(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/tipos-documento/${id}`);
   }
+
+  // ABOGADOS
+  getAbogados(): Observable<Abogado[]> {
+    return this.http.get<Abogado[]>(`${this.baseUrl}/abogados`);
+  }
+
+  crearAbogado(a: Abogado): Observable<Abogado> {
+    return this.http.post<Abogado>(`${this.baseUrl}/abogados`, a);
+  }
+
+  actualizarAbogado(id: number, a: Abogado): Observable<Abogado> {
+    return this.http.put<Abogado>(`${this.baseUrl}/abogados/${id}`, a);
+  }
+
+  eliminarAbogado(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/abogados/${id}`);
+  }
+
+  buscarAbogados(q: string): Observable<Abogado[]> {
+    return this.http.get<Abogado[]>(`${this.baseUrl}/abogados/buscar?q=${q}`);
+  }
+
+// FUNCIONARIOS
+  getFuncionarios(): Observable<Funcionario[]> {
+    return this.http.get<Funcionario[]>(`${this.baseUrl}/funcionarios`);
+  }
+
+  crearFuncionario(f: Funcionario): Observable<Funcionario> {
+    return this.http.post<Funcionario>(`${this.baseUrl}/funcionarios`, f);
+  }
+
+  actualizarFuncionario(id: number, f: Funcionario): Observable<Funcionario> {
+    return this.http.put<Funcionario>(`${this.baseUrl}/funcionarios/${id}`, f);
+  }
+
+  eliminarFuncionario(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/funcionarios/${id}`);
+  }
+
+
 }

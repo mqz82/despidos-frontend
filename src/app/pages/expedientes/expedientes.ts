@@ -7,8 +7,6 @@ import {ToastService } from '../../shared/toast';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
-
-
 @Component({
   selector: 'app-expedientes',
   standalone: true,

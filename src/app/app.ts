@@ -19,6 +19,8 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
           <li><a routerLink="/documentos" routerLinkActive="active">📋 Documentos</a></li>
           <li><a routerLink="/configuracion" routerLinkActive="active">⚙ Configuración</a></li>
           <li><a routerLink="/archivos" routerLinkActive="active">📎 Archivos</a></li>
+          <li><a routerLink="/abogados" routerLinkActive="active">📎 Abogados</a></li>
+          <li><a routerLink="/funcionarios" routerLinkActive="active">📎 Funcionarios</a></li>
         </ul>
         <div class="sidebar-footer">v1.0.0 · Spring Boot + Angular</div>
       </nav>
