@@ -219,5 +219,9 @@ export class ProyectoService {
     return this.http.delete<void>(`${this.baseUrl}/funcionarios/${id}`);
   }
 
+  buscarPersonaPorRut(rut: string): Observable<Persona> {
+    return this.http.get<Persona>(`${this.baseUrl}/personas/rut/${encodeURIComponent(rut)}`);
+  }
+
 
 }

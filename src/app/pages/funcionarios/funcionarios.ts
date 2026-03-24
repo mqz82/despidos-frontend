@@ -424,7 +424,13 @@ export class FuncionariosComponent implements OnInit {
           this.cdr.detectChanges();
           this.toastSvc.exito('Funcionario creado correctamente');
         },
-        error: () => this.toastSvc.error('Error al crear el funcionario'),
+        error: (err) => {
+          if (err.status === 400) {
+            this.toastSvc.error('Ya existe una persona registrada con ese RUT');
+          } else {
+            this.toastSvc.error('Error al crear el funcionario');
+          }
+        },
       });
     }
   }
@@ -449,6 +455,28 @@ export class FuncionariosComponent implements OnInit {
   onRutChange(valor: string) {
     this.form.persona.rut = this.rutSvc.formatear(valor);
     this.rutValido = this.rutSvc.validar(this.form.persona.rut || '');
+
+    // Si el RUT es válido buscar si ya existe la persona
+    if (this.rutValido && this.form.persona.rut) {
+      this.svc.buscarPersonaPorRut(this.form.persona.rut).subscribe({
+        next: (persona) => {
+          if (persona) {
+            // Autocompletar datos
+            this.form.persona.nombres = persona.nombres;
+            this.form.persona.appPaterno = persona.appPaterno;
+            this.form.persona.appMaterno = persona.appMaterno || '';
+            this.form.persona.genero = persona.genero || '';
+            this.form.persona.fechaNacimiento = persona.fechaNacimiento || '';
+            this.toastSvc.advertencia('Persona encontrada — datos autocompletos');
+            this.cdr.detectChanges();
+          }
+        },
+        error: () => {
+          // RUT no existe en el sistema — es una persona nueva, está bien
+          // No hacer nada
+        }
+      });
+    }
   }
 
   formVacio(): Funcionario {
